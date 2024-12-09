@@ -1,0 +1,11 @@
+{
+  "extends": "./node.json",
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "."
+  }
+}
