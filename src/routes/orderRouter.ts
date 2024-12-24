@@ -1,5 +1,10 @@
-import express, { Request, Response, Router } from "express";
+import express, { Router } from "express";
 
-const router = express.Router();
+import { getAllOrders, getOrder } from "../controllers/orderController";
+
+const router:Router = express.Router();
+
+router.get("/", getAllOrders);
+router.get("/:orderId", getOrder);
 
 export { router as orderRouter };

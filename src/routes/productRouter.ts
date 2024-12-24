@@ -1,5 +1,10 @@
-import express, { Request, Response, Router } from "express";
+import express, { Router } from "express";
 
-const router = express.Router();
+import { getAllProducts, getProduct } from "../controllers/productController";
+
+const router: Router = express.Router();
+
+router.get("/", getAllProducts);
+router.get("/:id", getProduct);
 
 export { router as productRouter };

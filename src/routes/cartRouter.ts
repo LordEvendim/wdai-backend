@@ -1,5 +1,10 @@
-import express, { Request, Response, Router } from "express";
+import express, { Router } from "express";
 
-const router = express.Router();
+import { createCart, deleteCart } from "../controllers/cartController";
+
+const router:Router = express.Router();
+
+router.post("/", createCart);
+router.delete("/:cartId", deleteCart);
 
 export { router as cartRouter };

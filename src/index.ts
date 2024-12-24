@@ -14,6 +14,7 @@ import { commentRouter } from "./routes/commentRouter";
 import { cartRouter } from "./routes/cartRouter";
 import { cartDetailsRouter } from "./routes/cartDetailsRouter";
 import { orderRouter } from "./routes/orderRouter";
+import { productDetailsRouter } from "./routes/productDetailsRouter";
 
 
 const app: Application = express();
@@ -38,8 +39,9 @@ const server = () => {
   app.use("/auth", authRouter);
   app.use("/user", userRouter);
   app.use("/product", productRouter);
+  app.use("/product/details", productDetailsRouter);
   app.use("/comments", commentRouter);
-  app.use("/cart", cartDetailsRouter);
+  app.use("/cart/details", cartDetailsRouter);
   app.use("/cart", cartRouter);
   app.use("/order", orderRouter);
 
