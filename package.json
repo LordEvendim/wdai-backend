@@ -9,14 +9,19 @@
     "dev": "tsx watch --clear-screen=false src/index.ts"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.38.2",
     "express": "^4.21.2",
-    "jwt": "^0.2.0",
+    "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.4",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.17.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
@@ -24,12 +29,13 @@
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "dotenv": "^16.4.7",
-    "drizzle-kit": "^0.30.0",
+    "drizzle-kit": "^0.30.1",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
