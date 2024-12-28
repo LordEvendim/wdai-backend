@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
+// import { Request, Response } from "express";
 
-export const createCart = (req: Request, res: Response) => {
-  const cart = CreateCart();
+// export const createCart = (req: Request, res: Response) => {
+//   const cart = CreateCart();
 
-  return res.json(cart);
-};
+//   return res.json(cart);
+// };
 
-export const deleteCart = (req: Request, res: Response) => {
-  const { cartId } = req.params;
-  const cart = DeleteCartById(cartId);
+// export const deleteCart = (req: Request, res: Response) => {
+//   const { cartId } = req.params;
+//   const cart = DeleteCartById(cartId);
 
-  return res.json(cart);
-};
+//   return res.json(cart);
+// };

@@ -1,10 +1,11 @@
 import express, { Router } from "express";
 
-import { getAllOrders, getOrder } from "../controllers/orderController";
+import { orderController } from "../controllers/orderController";
 
-const router:Router = express.Router();
+const router: Router = express.Router();
 
-router.get("/", getAllOrders);
-router.get("/:orderId", getOrder);
+router.get("/", orderController.getAllOrders);
+router.get("/:orderId", orderController.getOrder);
+router.post("/", orderController.createOrder);
 
 export { router as orderRouter };
