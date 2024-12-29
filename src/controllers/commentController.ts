@@ -1,34 +1,92 @@
-// import { Request, Response } from "express";
+import { Request, Response } from "express";
 
-// export const getAllComments = (req: Request, res: Response) => {
-//   const comments = QueryComments();
+import {
+  CreateComment,
+  DeleteCommentById,
+  QueryCommentById,
+  QueryComments,
+  QueryCommentsByProduct,
+  UpdateCommentById,
+  UpdateCommentByUserProduct,
+} from "../services/commentsTable";
+import { handleControllerError } from "../utils/errorHandling";
 
-//   return res.json(comments);
-// }
+const createCommentController = () => {
+  return {
+    getCommentById: async (req: Request, res: Response) => {
+      try {
+        const { id: commentId } = req.params;
+        const comment = await QueryCommentById(Number(commentId));
 
-// export const getComment = (req: Request, res: Response) => {
-//   const { commentId } = req.params;
-//   const comment = QueryCommentById(commentId);
+        res.status(200).send(comment);
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+    getAllComments: async (req: Request, res: Response) => {
+      try {
+        const comments = await QueryComments();
 
-//   return res.json(comment);
-// }
+        res.status(200).send(comments);
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
 
-// export const createComment = (req: Request, res: Response) => {
-//   const comment = CreateComment(req.body);
+    getProductComments: async (req: Request, res: Response) => {
+      try {
+        const { productId } = req.params;
+        const comments = await QueryCommentsByProduct(Number(productId));
 
-//   return res.json(comment);
-// }
+        res.status(200).send(comments);
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
 
-// export const updateComment = (req: Request, res: Response) => {
-//   const { commentId } = req.params;
-//   const comment = UpdateCommentById(commentId);
+    createComment: async (req: Request, res: Response) => {
+      try {
+        const comment = await CreateComment(req.body);
 
-//   return res.json(comment);
-// }
+        res.status(201).send("Succesfully created comment: " + comment);
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+    updateCommentById: async (req: Request, res: Response) => {
+      try {
+        const commentId = await UpdateCommentById(req.body);
 
-// export const deleteComment = (req: Request, res: Response) => {
-//   const { commentId } = req.params;
-//   const comment = DeleteCommentById(commentId);
+        res
+          .status(201)
+          .send({ message: "Comment updated successfully", commentId });
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+    updateCommentByUserProduct: async (req: Request, res: Response) => {
+      try {
+        const comment = await UpdateCommentByUserProduct(req.body);
+        res
+          .status(201)
+          .send({ message: "Comment updated successfully", comment });
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+    deleteCommentById: async (req: Request, res: Response) => {
+      try {
+        const { commentId } = req.body;
+        const comment = await DeleteCommentById(Number(commentId));
 
-//   return res.json(comment);
-// }
+        res
+          .status(201)
+          .send({ message: "Comment deleted successfully", comment });
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+  };
+};
+
+export const commentController = createCommentController();

@@ -1,10 +1,15 @@
-// import express, { Router } from "express";
+import express, { Router } from "express";
 
-// import { getAllProducts, getProduct } from "../controllers/productController";
+import { commentController } from "../controllers/commentController";
+import { productController } from "../controllers/productController";
 
-// const router: Router = express.Router();
+const router: Router = express.Router();
 
-// router.get("/", getAllProducts);
-// router.get("/:id", getProduct);
+router.get("/", productController.getAllProducts);
+router.get("/:id", productController.getProduct);
+router.get("/:category", productController.getProductsByCategory);
+router.get("/:id/comments", commentController.getProductComments);
+router.put("/:id", productController.updateProduct);
+router.put("/:id", commentController.updateCommentByUserProduct);
 
-// export { router as productRouter };
+export { router as productRouter };

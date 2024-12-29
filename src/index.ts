@@ -12,7 +12,7 @@ import { authRouter } from "./routes/authRouter";
 import { experimentingRouter } from "./routes/experimentingRouter";
 import { orderRouter } from "./routes/orderRouter";
 // import { productDetailsRouter } from "./routes/productDetailsRouter";
-// import { productRouter } from "./routes/productRouter";
+import { productRouter } from "./routes/productRouter";
 import { userRouter } from "./routes/userRouter";
 
 const app: Application = express();
@@ -36,7 +36,7 @@ const server = () => {
   app.use("/exp", experimentingRouter);
   app.use("/auth", authRouter);
   app.use("/users", userRouter);
-  // app.use("/product", productRouter);
+  app.use("/products", productRouter);
   // app.use("/product/details", productDetailsRouter);
   // app.use("/comments", commentRouter);
   // app.use("/cart/details", cartDetailsRouter);
