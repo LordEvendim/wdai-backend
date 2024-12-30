@@ -75,7 +75,14 @@ const createAuthController = () => {
         if (match) {
           // Create Access Token
           const accessToken = jwt.sign(
-            { userId: user.user_id },
+            {
+              UserInfo: {
+                userId: user.user_id,
+                username: user.username,
+                email: user.email,
+                userRole: user.role,
+              },
+            },
             process.env.ACCESS_TOKEN_SECRET!,
             { expiresIn: "1h" }
           );

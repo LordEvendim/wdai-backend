@@ -12,8 +12,14 @@ export const isAuthenticated = (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers["authorization"] as string | undefined;
-    if (!authHeader) {
+    const authHeader =
+      req.headers.Authorization ||
+      (req.headers.authorization as string | undefined);
+    if (
+      !authHeader ||
+      typeof authHeader !== "string" ||
+      !authHeader.startsWith("Bearer ")
+    ) {
       res.status(401).send("Authorization error");
       return;
     }
@@ -26,7 +32,8 @@ export const isAuthenticated = (
       }
 
       if (decoded && typeof decoded !== "string" && "username" in decoded) {
-        (req as any).user = decoded.username;
+        (req as any).user = decoded.UserInfo.username;
+        (req as any).role = decoded.UserInfo.role;
       }
     });
     next();

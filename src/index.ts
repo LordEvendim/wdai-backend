@@ -7,6 +7,7 @@ import cors from "./config/cors";
 import { logger } from "./logger/logger";
 import { credentials } from "./middlewares/credentials";
 import { endpointLogging } from "./middlewares/endpointLogging";
+import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { authRouter } from "./routes/authRouter";
 import { commentRouter } from "./routes/commentRouter";
 import { experimentingRouter } from "./routes/experimentingRouter";
@@ -36,10 +37,11 @@ const server = () => {
   // Routes
   app.use("/exp", experimentingRouter);
   app.use("/auth", authRouter);
-  app.use("/users", userRouter);
   app.use("/products", productRouter);
   app.use("/comments", commentRouter);
+  app.use(isAuthenticated);
   app.use("/orders", orderRouter);
+  app.use("/users", userRouter);
 
   return app;
 };

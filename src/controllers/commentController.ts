@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import {
   CreateComment,
   DeleteCommentById,
-  QueryCommentById,
+  GetCommentById,
   QueryComments,
   QueryCommentsByProduct,
   UpdateCommentById,
@@ -16,7 +16,7 @@ const createCommentController = () => {
     getCommentById: async (req: Request, res: Response) => {
       try {
         const { id: commentId } = req.params;
-        const comment = await QueryCommentById(Number(commentId));
+        const comment = await GetCommentById(Number(commentId));
 
         res.status(200).send(comment);
       } catch (error) {
@@ -46,7 +46,13 @@ const createCommentController = () => {
 
     createComment: async (req: Request, res: Response) => {
       try {
-        const comment = await CreateComment(req.body);
+        const userId = (req as any).user.id;
+        const productId = req.params.productId;
+        const comment = await CreateComment(
+          Number(productId),
+          Number(userId),
+          req.body
+        );
 
         res.status(201).send("Succesfully created comment: " + comment);
       } catch (error) {
@@ -55,11 +61,17 @@ const createCommentController = () => {
     },
     updateCommentById: async (req: Request, res: Response) => {
       try {
-        const commentId = await UpdateCommentById(req.body);
+        const commentId = req.params.id;
+        const userId = (req as any).user.id;
+        const comment = await UpdateCommentById(
+          Number(commentId),
+          Number(userId),
+          req.body
+        );
 
         res
           .status(201)
-          .send({ message: "Comment updated successfully", commentId });
+          .send({ message: "Comment updated successfully", comment });
       } catch (error) {
         handleControllerError(res, error);
       }
@@ -76,12 +88,26 @@ const createCommentController = () => {
     },
     deleteCommentById: async (req: Request, res: Response) => {
       try {
-        const { commentId } = req.body;
-        const comment = await DeleteCommentById(Number(commentId));
+        const userId = (req as any).user.id;
+        const userRole = (req as any).user.role;
+        const commentId = req.params.id;
 
-        res
-          .status(201)
-          .send({ message: "Comment deleted successfully", comment });
+        const comments = await GetCommentById(Number(commentId));
+        const comment = comments[0];
+
+        if (!comment) {
+          res.status(404).send({ message: "Comment not found" });
+          return;
+        }
+
+        // "Admin" can delete any comment; "User" can delete only their own comment
+        if (userRole !== "admin" && comment.user_id !== userId) {
+          res.status(403).send({ message: "Unauthorized" });
+          return;
+        }
+
+        await DeleteCommentById(Number(commentId));
+        res.status(200).send({ message: "Comment deleted successfully" });
       } catch (error) {
         handleControllerError(res, error);
       }

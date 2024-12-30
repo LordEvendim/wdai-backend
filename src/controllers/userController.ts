@@ -6,7 +6,6 @@ interface UserInfo {
   id: number;
   email: string;
   role: string;
-  credits: number;
 }
 
 const createUserController = () => {
@@ -18,7 +17,6 @@ const createUserController = () => {
         res.status(200).send({
           id: 1,
           email: "123@gmail.com",
-          credits: 100,
           role: "admin",
         });
       } catch (error) {

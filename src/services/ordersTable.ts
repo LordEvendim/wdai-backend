@@ -15,6 +15,8 @@ async function QueryOrders() {
 async function QueryOrderById(orderId: number) {
   const order = await db
     .select({
+      order_id: orders.order_id,
+      user_id: orders.user_id,
       productID: orderDetails.product_id,
       quantity: orderDetails.quantity,
     })
@@ -22,21 +24,6 @@ async function QueryOrderById(orderId: number) {
     .where(eq(orderDetails.order_id, orderId));
   return order;
 }
-
-// async function CreateOrder(body: any) {
-//   const order = await db
-//     .insert(schema.orders)
-//     .values({ user_id: body.user_id })
-//     .returning({ order_id: orders.order_id });
-//   const orderId = order[0].order_id;
-//   await db.insert(orderDetails).values({
-//     order_id: orderId,
-//     product_id: body.product_id,
-//     quantity: body.quantity,
-//   });
-//   return orderId;
-// }
-
 async function CreateOrder(body: any) {
   const transaction = await db.transaction(async (tx) => {
     // 1. Check stock for all products in the order

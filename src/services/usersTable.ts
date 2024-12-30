@@ -21,7 +21,12 @@ async function getUserByUsername(username: string) {
 
 async function getUserByRefreshToken(token: string) {
   const user = await db
-    .select({ user_id: users.user_id, username: users.username })
+    .select({
+      user_id: users.user_id,
+      username: users.username,
+      role: users.role,
+      email: users.email,
+    })
     .from(users)
     .where(eq(users.refresh_token, token));
   return user;

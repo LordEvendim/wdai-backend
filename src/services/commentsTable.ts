@@ -12,7 +12,7 @@ async function QueryComments() {
   return allComments;
 }
 
-async function QueryCommentById(body: any) {
+async function GetCommentById(body: any) {
   const commentId = body.comment_id;
 
   const existingComment = await db
@@ -49,11 +49,11 @@ async function QueryCommentsByProduct(productId: number) {
 }
 
 // Allow for only one comment per user per product
-async function CreateComment(body: any) {
+async function CreateComment(productId: number, userId: number, body: any) {
   const existingProduct = await db
     .select()
     .from(comments)
-    .where(eq(comments.comment_id, body.comment_id));
+    .where(eq(comments.product_id, productId));
 
   if (existingProduct.length === 0) {
     throw new Error("Product does not exist.");
@@ -62,10 +62,7 @@ async function CreateComment(body: any) {
   const existingComment = await db
     .select()
     .from(comments)
-    .where(
-      eq(comments.user_id, body.user_id) &&
-        eq(comments.product_id, body.product_id)
-    );
+    .where(eq(comments.user_id, userId) && eq(comments.product_id, productId));
 
   if (existingComment.length > 0) {
     throw new Error("You can only post one comment under a product.");
@@ -74,26 +71,29 @@ async function CreateComment(body: any) {
   const comment = await db
     .insert(comments)
     .values({
-      user_id: body.user_id,
-      product_id: body.product_id,
+      user_id: userId,
+      product_id: productId,
       body: body.body,
     })
-    .returning({ comment_id: comments.comment_id });
+    .returning({ comment: comments.body });
 
   return { comment };
 }
 
-async function UpdateCommentById(body: any) {
-  const commentId = body.comment_id;
+// Allow users to only update their own comments
+async function UpdateCommentById(commentId: number, userId: number, body: any) {
   const commentBody = body.body;
 
   const existingComment = await db
     .select()
     .from(comments)
-    .where(eq(comments.comment_id, body.comment_id));
+    .where(eq(comments.comment_id, commentId));
 
   if (existingComment.length === 0) {
     throw new Error("Comment does not exist.");
+  }
+  if (existingComment[0].user_id !== userId) {
+    throw new Error("You can only update your own comment.");
   }
 
   await db
@@ -152,12 +152,13 @@ async function DeleteCommentById(body: any) {
   }
 
   await db.delete(comments).where(eq(comments.comment_id, commentId));
+  return commentId;
 }
 
 export {
   CreateComment,
   DeleteCommentById,
-  QueryCommentById,
+  GetCommentById,
   QueryComments,
   QueryCommentsByProduct,
   UpdateCommentById,

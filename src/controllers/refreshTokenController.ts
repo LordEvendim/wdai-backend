@@ -43,7 +43,14 @@ const createRefreshTokenController = () => {
             }
 
             const accessToken = jwt.sign(
-              { username: user.username },
+              {
+                UserInfo: {
+                  id: user.user_id,
+                  username: user.username,
+                  email: user.email,
+                  role: user.role,
+                },
+              },
               process.env.ACCESS_TOKEN_SECRET!,
               { expiresIn: "15m" }
             );
