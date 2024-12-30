@@ -6,6 +6,11 @@ import * as schema from "../db/schema";
 const db = drizzle(process.env.DB_FILE_NAME!, { schema });
 const users = schema.users;
 
+async function getUserById(userId: number) {
+  const user = await db.select().from(users).where(eq(users.user_id, userId));
+  return user;
+}
+
 async function getUserByUsername(username: string) {
   const user = await db
     .select()
@@ -14,12 +19,20 @@ async function getUserByUsername(username: string) {
   return user;
 }
 
-async function updateUser(username: string, body: any) {
+async function getUserByRefreshToken(token: string) {
+  const user = await db
+    .select({ user_id: users.user_id, username: users.username })
+    .from(users)
+    .where(eq(users.refresh_token, token));
+  return user;
+}
+
+async function updateUser(userId: number, body: any) {
   const refreshToken = body.refresh_token;
   await db
     .update(users)
     .set({ refresh_token: refreshToken })
-    .where(eq(users.username, username));
+    .where(eq(users.user_id, userId));
 }
 
 async function createUser(body: any) {
@@ -41,13 +54,22 @@ async function createUser(body: any) {
     throw new Error("User already exists");
   }
 
-  const newUser = await db.insert(users).values({
-    username: username,
-    password: password,
-    role: "user",
-    email: email,
-  });
+  const newUser = await db
+    .insert(users)
+    .values({
+      username: username,
+      password: password,
+      role: "user",
+      email: email,
+    })
+    .returning({ username: users.username });
   return newUser;
 }
 
-export { createUser, getUserByUsername, updateUser };
+export {
+  createUser,
+  getUserById,
+  getUserByRefreshToken,
+  getUserByUsername,
+  updateUser,
+};

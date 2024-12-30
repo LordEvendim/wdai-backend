@@ -1,9 +1,11 @@
 import "dotenv/config";
 
+import cookieParser from "cookie-parser";
 import express, { Application } from "express";
 
 import cors from "./config/cors";
 import { logger } from "./logger/logger";
+import { credentials } from "./middlewares/credentials";
 import { endpointLogging } from "./middlewares/endpointLogging";
 import { authRouter } from "./routes/authRouter";
 import { commentRouter } from "./routes/commentRouter";
@@ -20,7 +22,9 @@ const server = () => {
   app.set("trust proxy", 1);
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(credentials);
   app.use(cors);
+  app.use(cookieParser());
 
   app.use(endpointLogging);
 

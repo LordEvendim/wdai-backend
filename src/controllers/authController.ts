@@ -17,6 +17,7 @@ const createAuthController = () => {
         const username = body.username;
         const password = body.password;
         const email = body.email;
+        const role = body.role || "user";
 
         if (!username || !password) {
           res
@@ -30,6 +31,7 @@ const createAuthController = () => {
           username,
           password: hashedPassword,
           email,
+          role,
         });
 
         res
@@ -61,45 +63,49 @@ const createAuthController = () => {
         const user = foundUser[0];
         const match = await bcrypt.compare(password, user.password);
 
-        if(match){
-        // Create Access Token
-        const accessToken = jwt.sign(
-          { username: user.username },
-          process.env.ACCESS_TOKEN_SECRET!,
-          { expiresIn: "1h" }
-        );
+        if (
+          !process.env.ACCESS_TOKEN_SECRET ||
+          !process.env.REFRESH_TOKEN_SECRET
+        ) {
+          throw new Error(
+            "Token secrets are not defined in environment variables"
+          );
+        }
 
-        // Create Refresh Token
-        const refreshToken = jwt.sign(
-          { username: user.username },
-          process.env.REFRESH_TOKEN_SECRET!,
-          { expiresIn: "1d" }
-        );
+        if (match) {
+          // Create Access Token
+          const accessToken = jwt.sign(
+            { userId: user.user_id },
+            process.env.ACCESS_TOKEN_SECRET!,
+            { expiresIn: "1h" }
+          );
 
-        // Save Refresh Token to the database
-        await updateUser(user.username, { refresh_token: refreshToken });
+          // Create Refresh Token
+          const refreshToken = jwt.sign(
+            { userId: user.user_id },
+            process.env.REFRESH_TOKEN_SECRET!,
+            { expiresIn: "1d" }
+          );
 
-        // Send Refresh Token as a cookie
-        res.cookie("jwt", refreshToken, {
-          httpOnly: true,
-          maxAge: 24 * 60 * 60 * 1000,
-        });
+          // Save Refresh Token to the database
+          await updateUser(user.user_id, { refresh_token: refreshToken });
 
-        // Send tokens to the client
-        res.status(200).send({
-          message: "Login successful",
-          accessToken,
-        })
-      };
-      } catch (error) {
-        handleControllerError(res, error);
-      }
-    },
+          // Send Refresh Token as a cookie
+          res.cookie("jwt", refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: "none",
+            secure: true,
+          });
 
-    logout: async (req: Request, res: Response): Promise<void> => {
-      try {
-        res.clearCookie("jwt");
-        res.status(200).send({ message: "Logout successful" });
+          // Send tokens to the client
+          res.status(200).send({
+            message: "Login successful",
+            accessToken,
+          });
+        } else {
+          res.status(401).send({ message: "Invalid credentials" });
+        }
       } catch (error) {
         handleControllerError(res, error);
       }

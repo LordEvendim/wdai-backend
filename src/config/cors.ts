@@ -1,7 +1,15 @@
 import cors from "cors";
 
+import { allowedOrigins } from "../config/allowedOrigins";
+
 export default cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   optionsSuccessStatus: 200,
   credentials: true,
-  origin: ["http://localhost:5173", "https://localhost:5173"], // do not change to "*". It will prevent cookies from saving
 });
