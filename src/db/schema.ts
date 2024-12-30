@@ -2,10 +2,11 @@ import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   user_id: integer().primaryKey(),
-  name: text().notNull(),
+  username: text().notNull().unique(),
   role: text().notNull(),
   email: text().notNull().unique(),
   password: text().notNull(),
+  refresh_token: text(),
 });
 
 export const products = sqliteTable("products", {
