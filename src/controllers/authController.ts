@@ -59,12 +59,12 @@ const createAuthController = () => {
         const username = body.username;
         const password = body.password;
         const email = body.email;
-        const role = body.role || "user";
+        const role = body.role ?? "user";
 
-        if (!username || !password) {
+        if (!username || !password || !email) {
           res
             .status(400)
-            .send({ message: "Both username and password are required" });
+            .send({ message: "Username, password, email are required" });
           return;
         }
 

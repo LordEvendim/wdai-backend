@@ -68,7 +68,7 @@ async function CreateOrder(body: any) {
     // 3. Insert order
     const [order] = await tx
       .insert(schema.orders)
-      .values({ user_id: body.user_id })
+      .values({ user_id: body.user.id })
       .returning({ order_id: schema.orders.order_id });
 
     const orderId = order.order_id;

@@ -44,6 +44,7 @@ async function createUser(body: any) {
   const username = body.username;
   const password = body.password;
   const email = body.email;
+  const role = body.role;
 
   const emailInDatabase = await db
     .select()
@@ -64,7 +65,7 @@ async function createUser(body: any) {
     .values({
       username: username,
       password: password,
-      role: "user",
+      role: role,
       email: email,
     })
     .returning({ userId: users.user_id });

@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "../db/schema";
+import { and } from "drizzle-orm";
 
 const db = drizzle(process.env.DB_FILE_NAME!, { schema });
 const comments = schema.comments;
@@ -60,7 +61,9 @@ async function CreateComment(productId: number, userId: number, text: string) {
   const existingComment = await db
     .select()
     .from(comments)
-    .where(eq(comments.user_id, userId) && eq(comments.product_id, productId));
+    .where(
+      and(eq(comments.user_id, userId), eq(comments.product_id, productId))
+    );
 
   if (existingComment.length > 0) {
     throw new Error("You can only post one comment under a product.");
