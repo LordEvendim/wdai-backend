@@ -11,6 +11,48 @@ import { handleControllerError } from "../utils/errorHandling";
 
 const createAuthController = () => {
   return {
+    getSession: async (req: Request, res: Response): Promise<void> => {
+      try {
+        const authHeader =
+          req.headers.Authorization ||
+          (req.headers.authorization as string | undefined);
+        if (
+          !authHeader ||
+          typeof authHeader !== "string" ||
+          !authHeader.startsWith("Bearer ")
+        ) {
+          res.status(401).send("Authorization error");
+          return;
+        }
+
+        const token = authHeader.split(" ")[1];
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, decoded) => {
+          if (err) {
+            res.status(403).send("Authorization error");
+            return;
+          }
+
+          if (
+            decoded &&
+            typeof decoded !== "string" &&
+            decoded.UserInfo &&
+            "username" in decoded.UserInfo
+          ) {
+            res.status(200).send({
+              message: "Session is active",
+              user: decoded.UserInfo,
+            });
+          } else {
+            res.status(404).send({
+              message: "Session not found",
+            });
+          }
+        });
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+
     register: async (req: Request, res: Response): Promise<void> => {
       try {
         const body = req.body;
@@ -27,16 +69,22 @@ const createAuthController = () => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await createUser({
+        const { userId } = await createUser({
           username,
           password: hashedPassword,
           email,
           role,
         });
 
-        res
-          .status(201)
-          .send({ message: "User registered successfully", newUser });
+        res.status(201).send({
+          message: "User registered successfully",
+          user: {
+            id: userId,
+            username,
+            email,
+            role,
+          },
+        });
       } catch (error) {
         handleControllerError(res, error);
       }
@@ -77,10 +125,10 @@ const createAuthController = () => {
           const accessToken = jwt.sign(
             {
               UserInfo: {
-                userId: user.user_id,
+                id: user.user_id,
                 username: user.username,
                 email: user.email,
-                userRole: user.role,
+                role: user.role,
               },
             },
             process.env.ACCESS_TOKEN_SECRET!,

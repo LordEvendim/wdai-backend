@@ -31,9 +31,12 @@ export const isAuthenticated = (
         return;
       }
 
-      if (decoded && typeof decoded !== "string" && "username" in decoded) {
-        (req as any).user = decoded.UserInfo.username;
-        (req as any).role = decoded.UserInfo.role;
+      if (
+        decoded &&
+        typeof decoded !== "string" &&
+        "username" in decoded.UserInfo
+      ) {
+        (req as any).user = decoded.UserInfo;
       }
     });
     next();

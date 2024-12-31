@@ -7,9 +7,10 @@ import { verifyRole } from "../middlewares/verifyRole";
 const router: Router = express.Router();
 
 router.get("/", commentController.getAllComments);
+router.get("/product/:productId", commentController.getProductComments);
 router.get("/:commentId", commentController.getCommentById);
 router.post(
-  "/",
+  "/:productId",
   isAuthenticated,
   verifyRole(["admin", "user"]),
   commentController.createComment
@@ -23,7 +24,7 @@ router.put(
 router.delete(
   "/:commentId",
   isAuthenticated,
-  verifyRole(["admin"]),
+  verifyRole(["admin", "user"]),
   commentController.deleteCommentById
 );
 

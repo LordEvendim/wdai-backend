@@ -15,7 +15,8 @@ const createCommentController = () => {
   return {
     getCommentById: async (req: Request, res: Response) => {
       try {
-        const { id: commentId } = req.params;
+        const { commentId } = req.params;
+
         const comment = await GetCommentById(Number(commentId));
 
         res.status(200).send(comment);
@@ -48,10 +49,16 @@ const createCommentController = () => {
       try {
         const userId = (req as any).user.id;
         const productId = req.params.productId;
+        const text = req.body.text;
+
+        if (!text) {
+          throw new Error("Comment text is required");
+        }
+
         const comment = await CreateComment(
           Number(productId),
           Number(userId),
-          req.body
+          text
         );
 
         res.status(201).send("Succesfully created comment: " + comment);
@@ -90,7 +97,7 @@ const createCommentController = () => {
       try {
         const userId = (req as any).user.id;
         const userRole = (req as any).user.role;
-        const commentId = req.params.id;
+        const commentId = req.params.commentId;
 
         const comments = await GetCommentById(Number(commentId));
         const comment = comments[0];
@@ -100,7 +107,7 @@ const createCommentController = () => {
           return;
         }
 
-        // "Admin" can delete any comment; "User" can delete only their own comment
+        // "Admin" can delete any comment; "User" can delete only his own comment
         if (userRole !== "admin" && comment.user_id !== userId) {
           res.status(403).send({ message: "Unauthorized" });
           return;

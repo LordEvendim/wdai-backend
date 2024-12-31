@@ -67,8 +67,8 @@ async function createUser(body: any) {
       role: "user",
       email: email,
     })
-    .returning({ username: users.username });
-  return newUser;
+    .returning({ userId: users.user_id });
+  return newUser[0];
 }
 
 export {

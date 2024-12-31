@@ -12,13 +12,11 @@ async function QueryComments() {
   return allComments;
 }
 
-async function GetCommentById(body: any) {
-  const commentId = body.comment_id;
-
+async function GetCommentById(commentId: number) {
   const existingComment = await db
     .select()
     .from(comments)
-    .where(eq(comments.comment_id, body.comment_id));
+    .where(eq(comments.comment_id, commentId));
 
   if (existingComment.length === 0) {
     throw new Error("Comment does not exist.");
@@ -49,11 +47,11 @@ async function QueryCommentsByProduct(productId: number) {
 }
 
 // Allow for only one comment per user per product
-async function CreateComment(productId: number, userId: number, body: any) {
+async function CreateComment(productId: number, userId: number, text: string) {
   const existingProduct = await db
     .select()
-    .from(comments)
-    .where(eq(comments.product_id, productId));
+    .from(products)
+    .where(eq(products.product_id, productId));
 
   if (existingProduct.length === 0) {
     throw new Error("Product does not exist.");
@@ -73,7 +71,7 @@ async function CreateComment(productId: number, userId: number, body: any) {
     .values({
       user_id: userId,
       product_id: productId,
-      body: body.body,
+      body: text,
     })
     .returning({ comment: comments.body });
 
@@ -139,13 +137,11 @@ async function UpdateCommentByUserProduct(body: any) {
   return commentId;
 }
 
-async function DeleteCommentById(body: any) {
-  const commentId = body.comment_id;
-
+async function DeleteCommentById(commentId: number) {
   const existingComment = await db
     .select()
     .from(comments)
-    .where(eq(comments.comment_id, body.comment_id));
+    .where(eq(comments.comment_id, commentId));
 
   if (existingComment.length === 0) {
     throw new Error("Comment does not exist.");

@@ -6,7 +6,8 @@
   "author": "LordEvendim <24799163+LordEvendim@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx watch --clear-screen=false src/index.ts"
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "drizzle:push": "drizzle-kit push"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

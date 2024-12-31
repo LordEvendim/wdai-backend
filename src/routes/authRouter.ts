@@ -6,11 +6,12 @@ import { authController } from "../controllers/authController";
 
 const router: Router = express.Router();
 
-// router.get("/", authController.getSession);
+router.get("/", authController.getSession);
+router.get("/refresh", refreshTokenController.handleRefreshToken);
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
-router.get("/logout", logoutController.handleLogout);
-router.get("/refresh", refreshTokenController.handleRefreshToken);
+
+router.delete("/logout", logoutController.handleLogout);
 
 export { router as authRouter };
