@@ -20,7 +20,7 @@ const createLogoutController = () => {
           // Clear the cookie even if the user is not found
           res.clearCookie("jwt", {
             httpOnly: true,
-            secure: true,
+            secure: false,
             sameSite: "none",
           });
           res.status(204).send({ message: "User not found" });
@@ -35,7 +35,7 @@ const createLogoutController = () => {
         // Clear the cookie
         res.clearCookie("jwt", {
           httpOnly: true,
-          secure: true,
+          secure: false,
           sameSite: "none",
         });
 

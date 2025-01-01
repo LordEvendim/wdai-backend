@@ -9,10 +9,9 @@ const createRefreshTokenController = () => {
     handleRefreshToken: async (req: Request, res: Response): Promise<void> => {
       try {
         const cookies = req.cookies;
+
         if (!cookies?.jwt) {
-          res
-            .status(401)
-            .send({ message: "Both username and password are required" });
+          res.status(401).send({ message: "JWT cookie is required" });
           return;
         }
 
@@ -37,7 +36,7 @@ const createRefreshTokenController = () => {
               return;
             }
 
-            if (user.username !== decoded.username) {
+            if (user.user_id !== decoded.userId) {
               res.status(403).send({ message: "Invalid Token" });
               return;
             }

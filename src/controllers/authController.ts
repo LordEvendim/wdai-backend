@@ -148,9 +148,9 @@ const createAuthController = () => {
           // Send Refresh Token as a cookie
           res.cookie("jwt", refreshToken, {
             httpOnly: true,
+            secure: false,
             maxAge: 24 * 60 * 60 * 1000,
             sameSite: "none",
-            secure: true,
           });
 
           // Send tokens to the client
