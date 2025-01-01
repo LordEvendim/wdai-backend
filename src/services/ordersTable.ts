@@ -2,6 +2,7 @@ import { eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "../db/schema";
+import { products } from "../db/schema";
 
 const db = drizzle(process.env.DB_FILE_NAME!, { schema });
 const orders = schema.orders;
@@ -10,6 +11,23 @@ const orderDetails = schema.order_details;
 async function QueryOrders() {
   const allOrders = await db.select().from(orders);
   return allOrders;
+}
+
+async function QueryUserOrders(userId: number) {
+  const userOrders = await db
+    .select({
+      orderId: orders.order_id,
+      productId: orderDetails.product_id,
+      quantity: orderDetails.quantity,
+      productName: products.name,
+      price: products.price,
+    })
+    .from(orders)
+    .leftJoin(orderDetails, eq(orders.order_id, orderDetails.order_id))
+    .leftJoin(products, eq(orderDetails.product_id, products.product_id))
+    .where(eq(orders.user_id, userId));
+
+  return userOrders;
 }
 
 async function QueryOrderById(orderId: number) {
@@ -86,4 +104,4 @@ async function CreateOrder(body: any) {
   return transaction;
 }
 
-export { CreateOrder, QueryOrderById, QueryOrders };
+export { CreateOrder, QueryOrderById, QueryOrders, QueryUserOrders };

@@ -4,6 +4,7 @@ import {
   CreateOrder,
   QueryOrderById,
   QueryOrders,
+  QueryUserOrders,
 } from "../services/ordersTable";
 import { handleControllerError } from "../utils/errorHandling";
 
@@ -32,6 +33,23 @@ const createOrderController = () => {
     getAllOrders: async (req: Request, res: Response) => {
       try {
         const orders = await QueryOrders();
+
+        res.status(200).send(orders);
+      } catch (error) {
+        handleControllerError(res, error);
+      }
+    },
+    getUserOrders: async (req: Request, res: Response) => {
+      try {
+        const userId = req.params.userId;
+
+        if (!userId) {
+          console.log("sending");
+          res.status(400).send({ message: "User ID is required" });
+          return;
+        }
+
+        const orders = await QueryUserOrders(Number(userId));
 
         res.status(200).send(orders);
       } catch (error) {

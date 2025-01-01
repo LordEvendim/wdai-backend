@@ -12,6 +12,7 @@ router.get(
   verifyRole(["admin"]),
   orderController.getAllOrders
 );
+router.get("/users/:userId", isAuthenticated, orderController.getUserOrders);
 router.get(
   "/:orderId",
   isAuthenticated,

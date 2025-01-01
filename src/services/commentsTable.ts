@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "../db/schema";
 import { and } from "drizzle-orm";
+import { users } from "../db/schema";
 
 const db = drizzle(process.env.DB_FILE_NAME!, { schema });
 const comments = schema.comments;
@@ -41,9 +42,17 @@ async function QueryCommentsByProduct(productId: number) {
   }
 
   const productComments = await db
-    .select()
+    .select({
+      comment_id: comments.comment_id,
+      product_id: comments.product_id,
+      user_id: comments.user_id,
+      body: comments.body,
+      username: users.username,
+    })
     .from(comments)
+    .leftJoin(users, eq(comments.user_id, users.user_id))
     .where(eq(comments.product_id, productId));
+
   return productComments;
 }
 
