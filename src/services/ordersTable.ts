@@ -33,16 +33,20 @@ async function QueryUserOrders(userId: number) {
 async function QueryOrderById(orderId: number) {
   const order = await db
     .select({
-      order_id: orders.order_id,
-      user_id: orders.user_id,
-      productID: orderDetails.product_id,
+      orderId: orders.order_id,
+      userId: orders.user_id,
+      productId: orderDetails.product_id,
       quantity: orderDetails.quantity,
+      productName: products.name,
+      price: products.price,
     })
-    .from(orderDetails)
-    .where(eq(orderDetails.order_id, orderId));
+    .from(orders)
+    .leftJoin(orderDetails, eq(orders.order_id, orderDetails.order_id))
+    .leftJoin(products, eq(orderDetails.product_id, products.product_id))
+    .where(eq(orders.order_id, orderId));
   return order;
 }
-async function CreateOrder(body: any) {
+async function CreateOrder(body: any, userId: number) {
   const transaction = await db.transaction(async (tx) => {
     // 1. Check stock for all products in the order
     const productIds = body.products.map((product: any) => product.product_id);
@@ -86,7 +90,7 @@ async function CreateOrder(body: any) {
     // 3. Insert order
     const [order] = await tx
       .insert(schema.orders)
-      .values({ user_id: body.user.id })
+      .values({ user_id: userId })
       .returning({ order_id: schema.orders.order_id });
 
     const orderId = order.order_id;

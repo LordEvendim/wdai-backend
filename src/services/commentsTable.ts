@@ -1,8 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "../db/schema";
-import { and } from "drizzle-orm";
 import { users } from "../db/schema";
 
 const db = drizzle(process.env.DB_FILE_NAME!, { schema });
@@ -85,14 +84,14 @@ async function CreateComment(productId: number, userId: number, text: string) {
       product_id: productId,
       body: text,
     })
-    .returning({ comment: comments.body });
+    .returning({ commentId: comments.comment_id });
 
-  return { comment };
+  return comment;
 }
 
 // Allow users to only update their own comments
 async function UpdateCommentById(commentId: number, userId: number, body: any) {
-  const commentBody = body.body;
+  const commentBody = body.text;
 
   const existingComment = await db
     .select()
@@ -149,7 +148,11 @@ async function UpdateCommentByUserProduct(body: any) {
   return commentId;
 }
 
-async function DeleteCommentById(commentId: number) {
+async function DeleteCommentById(
+  commentId: number,
+  userId: number,
+  userRole: string
+) {
   const existingComment = await db
     .select()
     .from(comments)
@@ -157,6 +160,9 @@ async function DeleteCommentById(commentId: number) {
 
   if (existingComment.length === 0) {
     throw new Error("Comment does not exist.");
+  }
+  if (userRole !== "admin" && existingComment[0].user_id !== userId) {
+    throw new Error("You can only delete your own comment.");
   }
 
   await db.delete(comments).where(eq(comments.comment_id, commentId));
