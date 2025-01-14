@@ -61,14 +61,16 @@ const createCommentController = () => {
           text
         );
 
-        res.status(201).send("Succesfully created comment: " + comment);
+        res
+          .status(201)
+          .send("Succesfully created comment with ID: " + comment[0].commentId);
       } catch (error) {
         handleControllerError(res, error);
       }
     },
     updateCommentById: async (req: Request, res: Response) => {
       try {
-        const commentId = req.params.id;
+        const commentId = req.params.commentId;
         const userId = (req as any).user.id;
         const comment = await UpdateCommentById(
           Number(commentId),
@@ -113,7 +115,7 @@ const createCommentController = () => {
           return;
         }
 
-        await DeleteCommentById(Number(commentId));
+        await DeleteCommentById(Number(commentId), userId, userRole);
         res.status(200).send({ message: "Comment deleted successfully" });
       } catch (error) {
         handleControllerError(res, error);

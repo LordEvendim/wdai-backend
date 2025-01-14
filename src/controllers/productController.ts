@@ -11,7 +11,7 @@ const createProductController = () => {
   return {
     getProduct: async (req: Request, res: Response) => {
       try {
-        const { id: productId } = req.params;
+        const { productId: productId } = req.params;
         const product = await QueryProductById(Number(productId));
 
         res.status(200).send(product);
@@ -30,7 +30,7 @@ const createProductController = () => {
     },
 
     getProductsByCategory: async (req: Request, res: Response) => {
-      try {
+      try {;
         const { category } = req.params;
         const product = await QueryProductsByCategory(category);
 

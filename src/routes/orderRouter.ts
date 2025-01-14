@@ -1,8 +1,8 @@
 import express, { Router } from "express";
+import { isAuthenticated } from "src/middlewares/isAuthenticated";
 import { verifyRole } from "src/middlewares/verifyRole";
 
 import { orderController } from "../controllers/orderController";
-import { isAuthenticated } from "src/middlewares/isAuthenticated";
 
 const router: Router = express.Router();
 

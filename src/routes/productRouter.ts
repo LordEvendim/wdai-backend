@@ -7,9 +7,14 @@ import { productController } from "../controllers/productController";
 const router: Router = express.Router();
 
 router.get("/", productController.getAllProducts);
-router.get("/:id", productController.getProduct);
-router.get("/:category", productController.getProductsByCategory);
-router.get("/:id/comments", commentController.getProductComments);
-router.put("/:id", verifyRole(["admin"]), productController.updateProduct);
+router.get("/:productId", productController.getProduct);
+router.get("/category/:category", productController.getProductsByCategory);
+router.get("/:productId/comments", commentController.getProductComments);
+router.put(
+  "/:productId",
+  verifyRole(["admin"]),
+  productController.updateProduct
+);
+
 
 export { router as productRouter };
