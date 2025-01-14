@@ -42,10 +42,10 @@ const createOrderController = () => {
     },
     getUserOrders: async (req: Request, res: Response) => {
       try {
-        const userId = req.params.userId;
+        const userId = parseInt(req.params.userId);
 
         if (
-          req.params.userId !== (req as any).user.id &&
+          userId !== (req as any).user.id &&
           (req as any).user.role !== "admin"
         ) {
           res.status(403).send({ message: "You can only see your orders" });

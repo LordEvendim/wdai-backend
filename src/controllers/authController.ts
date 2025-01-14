@@ -150,7 +150,7 @@ const createAuthController = () => {
             httpOnly: true,
             secure: false,
             maxAge: 24 * 60 * 60 * 1000,
-            sameSite: "none",
+            sameSite: "lax",
           });
 
           // Send tokens to the client
