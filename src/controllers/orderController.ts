@@ -12,15 +12,15 @@ const createOrderController = () => {
   return {
     getOrder: async (req: Request, res: Response) => {
       try {
-        const orderId = req.params;
+        const orderId = req.params.orderId;
         const userId = (req as any).user.id;
         const userRole = (req as any).user.role;
 
         const orders = await QueryOrderById(Number(orderId));
         const order = orders[0];
 
-        // "Admin" can see any comment; "User" can see only their own comment
-        if (userRole !== "admin" && order.user_id !== Number(userId)) {
+        // "Admin" can see any order
+        if (userRole !== "admin" && order.userId !== Number(userId)) {
           res.status(403).send({ message: "Unauthorized" });
           return;
         }
@@ -32,6 +32,7 @@ const createOrderController = () => {
     },
     getAllOrders: async (req: Request, res: Response) => {
       try {
+        console.log("getting orders");
         const orders = await QueryOrders();
 
         res.status(200).send(orders);
@@ -41,11 +42,13 @@ const createOrderController = () => {
     },
     getUserOrders: async (req: Request, res: Response) => {
       try {
-        const userId = req.params.userId;
+        const userId = parseInt(req.params.userId);
 
-        if (!userId) {
-          console.log("sending");
-          res.status(400).send({ message: "User ID is required" });
+        if (
+          userId !== (req as any).user.id &&
+          (req as any).user.role !== "admin"
+        ) {
+          res.status(403).send({ message: "You can only see your orders" });
           return;
         }
 
@@ -58,8 +61,8 @@ const createOrderController = () => {
     },
     createOrder: async (req: Request, res: Response) => {
       try {
-        const orderId = await CreateOrder(req.body);
-
+        const userId = (req as any).user.id;
+        const orderId = await CreateOrder(req.body, Number(userId));
         res
           .status(200)
           .send({ message: "Order created successfully", orderId });
