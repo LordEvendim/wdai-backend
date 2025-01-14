@@ -45,6 +45,8 @@ async function QueryOrderById(orderId: number) {
 async function CreateOrder(body: any) {
   const transaction = await db.transaction(async (tx) => {
     // 1. Check stock for all products in the order
+    console.log(body);
+
     const productIds = body.products.map((product: any) => product.product_id);
     const quantities = body.products.reduce(
       (acc: Record<number, number>, product: any) => {
@@ -86,7 +88,7 @@ async function CreateOrder(body: any) {
     // 3. Insert order
     const [order] = await tx
       .insert(schema.orders)
-      .values({ user_id: body.user.id })
+      .values({ user_id: body.user_id })
       .returning({ order_id: schema.orders.order_id });
 
     const orderId = order.order_id;
